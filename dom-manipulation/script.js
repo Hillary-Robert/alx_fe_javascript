@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
             categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
     }
 
-    function showFilteredQuotes() {
+    function filterQuotes() {
         const selectedCategory = categoryFilter.value;
         localStorage.setItem("lastSelectedCategory", selectedCategory);
         const filteredQuotes = selectedCategory === "all" ? quotes : quotes.filter(q => q.category === selectedCategory);
@@ -35,13 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
         quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
     }
 
-    categoryFilter.addEventListener("change", showFilteredQuotes);
+    categoryFilter.addEventListener("change", filterQuotes);
 
     categoryFilter.value = localStorage.getItem("lastSelectedCategory") || "all";
     populateCategories();
-    showFilteredQuotes();
+    filterQuotes();
 
-    newQuoteBtn.addEventListener("click", showFilteredQuotes);
+    newQuoteBtn.addEventListener("click", filterQuotes);
 
     const createAddQuoteForm = document.createElement("form");
     createAddQuoteForm.innerHTML = `
