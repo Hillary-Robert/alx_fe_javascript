@@ -5,8 +5,21 @@ document.addEventListener("DOMContentLoaded", () => {
       { text: "Success is not final, failure is not fatal: it is the courage to continue that counts.", category: "Success" }
   ];
 
+
+
+  function saveQuotes(){
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+  }
+
+
+
   const quoteDisplay = document.getElementById("quoteDisplay");
   const newQuoteBtn = document.getElementById("newQuote");
+
+
+  function saveQuotes() {
+    localStorage.setItem("quotes", JSON.stringify(quotes));
+  }
 
   function showRandomQuote() {
       if (quotes.length === 0) {
@@ -16,11 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
       let randomX = Math.floor(Math.random() * quotes.length);
       let randomQuotes = quotes[randomX];
       quoteDisplay.innerHTML = `<p><strong>${randomQuotes.category}:</strong> "${randomQuotes.text}"</p>`;
+      sessionStorage.setItem("lastViewedQuote", JSON.stringify(randomQuotes))
   }
 
   newQuoteBtn.addEventListener("click", showRandomQuote);
-
-
 
 
 
@@ -61,6 +73,78 @@ document.addEventListener("DOMContentLoaded", () => {
           alertText.style.display = "none";
       }, 3000);
   }
+
+
+
+  function exportToJsonFile() {
+        const dataStr = JSON.stringify(quotes, null, 2);
+        const blob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "quotes.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function importFromJsonFile(event) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (event) {
+            try {
+                const importedQuotes = JSON.parse(event.target.result);
+
+                // Validate imported data
+                if (!Array.isArray(importedQuotes) || !importedQuotes.every(q => q.text && q.category)) {
+                    alert("Invalid JSON format. Ensure each quote has 'text' and 'category' properties.");
+                    return;
+                }
+
+                quotes.push(...importedQuotes);
+                saveQuotes();
+                alert("Quotes imported successfully!");
+            } catch (error) {
+                alert("Error parsing JSON file.");
+            }
+        };
+        fileReader.readAsText(event.target.files[0]);
+    }
+
+    function exportToJsonFile() {
+      const dataStr = JSON.stringify(quotes, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "quotes.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  }
+
+  function importFromJsonFile(event) {
+      const fileReader = new FileReader();
+      fileReader.onload = function (event) {
+          try {
+              const importedQuotes = JSON.parse(event.target.result);
+
+              // Validate imported data
+              if (!Array.isArray(importedQuotes) || !importedQuotes.every(q => q.text && q.category)) {
+                  alert("Invalid JSON format. Ensure each quote has 'text' and 'category' properties.");
+                  return;
+              }
+
+              quotes.push(...importedQuotes);
+              saveQuotes();
+              alert("Quotes imported successfully!");
+          } catch (error) {
+              alert("Error parsing JSON file.");
+          }
+      };
+      fileReader.readAsText(event.target.files[0]);
+  }
+
+
 
   showRandomQuote();
 });
