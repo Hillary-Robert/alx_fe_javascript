@@ -35,6 +35,25 @@ document.addEventListener("DOMContentLoaded", () => {
         quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
     }
 
+    async function syncWithServer() {
+        try {
+            const response = await fetch("https://jsonplaceholder.typicode.com/posts"); // Simulated API call
+            const serverQuotes = await response.json();
+            
+            if (Array.isArray(serverQuotes)) {
+                const newQuotes = serverQuotes.map(q => ({ text: q.title, category: "Server Data" }));
+                quotes = [...quotes, ...newQuotes];
+                saveQuotes();
+                populateCategories();
+                filterQuotes();
+            }
+        } catch (error) {
+            console.error("Error syncing with server:", error);
+        }
+    }
+
+    setInterval(syncWithServer, 60000); // Sync every 60 seconds
+
     categoryFilter.addEventListener("change", filterQuotes);
 
     categoryFilter.value = localStorage.getItem("lastSelectedCategory") || "all";
