@@ -9,6 +9,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const newQuoteBtn = document.getElementById("newQuote");
     const categoryFilter = document.getElementById("categoryFilter");
     const exportQuotesBtn = document.getElementById("exportQuotes");
+    const formContainer = document.createElement("div");
+    formContainer.id = "formContainer";
+    document.body.appendChild(formContainer);
+
+    const syncStatus = document.createElement("p");
+    syncStatus.id = "syncStatus";
+    document.body.appendChild(syncStatus);
 
     function saveQuotes() {
         localStorage.setItem("quotes", JSON.stringify(quotes));
@@ -21,9 +28,23 @@ document.addEventListener("DOMContentLoaded", () => {
             categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
     }
 
+    function filterQuotes() {
+        const selectedCategory = categoryFilter.value;
+        localStorage.setItem("lastSelectedCategory", selectedCategory);
+        const filteredQuotes = selectedCategory === "all" ? quotes : quotes.filter(q => q.category === selectedCategory);
+        
+        if (filteredQuotes.length === 0) {
+            quoteDisplay.textContent = "No quotes available for this category. Please add one!";
+            return;
+        }
+        let randomX = Math.floor(Math.random() * filteredQuotes.length);
+        let randomQuote = filteredQuotes[randomX];
+        quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
+    }
+
     async function fetchQuotesFromServer() {
         try {
-            const response = await fetch("https://jsonplaceholder.typicode.com/posts"); // Simulated API call
+            const response = await fetch("https://jsonplaceholder.typicode.com/posts"); 
             const serverQuotes = await response.json();
             
             if (Array.isArray(serverQuotes)) {
@@ -32,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 saveQuotes();
                 populateCategories();
                 filterQuotes();
+                syncStatus.textContent = "Quotes synced with server!";
             }
         } catch (error) {
             console.error("Error fetching quotes from server:", error);
@@ -45,6 +67,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(quote)
             });
+            syncStatus.textContent = "Quote successfully posted to server!";
         } catch (error) {
             console.error("Error posting quote to server:", error);
         }
@@ -54,15 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
         await fetchQuotesFromServer();
     }
 
-    setInterval(syncQuotes, 60000); // Sync every 60 seconds
+    setInterval(syncQuotes, 60000); 
 
     categoryFilter.addEventListener("change", filterQuotes);
+    newQuoteBtn.addEventListener("click", filterQuotes);
 
     categoryFilter.value = localStorage.getItem("lastSelectedCategory") || "all";
     populateCategories();
     filterQuotes();
-
-    newQuoteBtn.addEventListener("click", filterQuotes);
 
     const createAddQuoteForm = document.createElement("form");
     createAddQuoteForm.innerHTML = `
@@ -72,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button type="button" id="addQuoteBtn">Add Quote</button>
         <p id="alertMessage" style="display: none;"></p> 
     `;
-    document.body.appendChild(createAddQuoteForm);
+    formContainer.appendChild(createAddQuoteForm);
 
     document.getElementById("addQuoteBtn").addEventListener("click", addQuote);
 
