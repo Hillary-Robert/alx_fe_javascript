@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
         quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
     }
 
-    async function syncWithServer() {
+    async function fetchQuotesFromServer() {
         try {
             const response = await fetch("https://jsonplaceholder.typicode.com/posts"); // Simulated API call
             const serverQuotes = await response.json();
@@ -48,11 +48,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 filterQuotes();
             }
         } catch (error) {
-            console.error("Error syncing with server:", error);
+            console.error("Error fetching quotes from server:", error);
         }
     }
 
-    setInterval(syncWithServer, 60000); // Sync every 60 seconds
+    async function syncQuotes() {
+        await fetchQuotesFromServer();
+    }
+
+    setInterval(syncQuotes, 60000); // Sync every 60 seconds
 
     categoryFilter.addEventListener("change", filterQuotes);
 
