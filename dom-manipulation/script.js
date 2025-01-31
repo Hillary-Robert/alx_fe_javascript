@@ -21,20 +21,6 @@ document.addEventListener("DOMContentLoaded", () => {
             categories.map(cat => `<option value="${cat}">${cat}</option>`).join("");
     }
 
-    function filterQuotes() {
-        const selectedCategory = categoryFilter.value;
-        localStorage.setItem("lastSelectedCategory", selectedCategory);
-        const filteredQuotes = selectedCategory === "all" ? quotes : quotes.filter(q => q.category === selectedCategory);
-        
-        if (filteredQuotes.length === 0) {
-            quoteDisplay.textContent = "No quotes available for this category. Please add one!";
-            return;
-        }
-        let randomX = Math.floor(Math.random() * filteredQuotes.length);
-        let randomQuote = filteredQuotes[randomX];
-        quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
-    }
-
     async function fetchQuotesFromServer() {
         try {
             const response = await fetch("https://jsonplaceholder.typicode.com/posts"); // Simulated API call
@@ -49,6 +35,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Error fetching quotes from server:", error);
+        }
+    }
+
+    async function postQuoteToServer(quote) {
+        try {
+            await fetch("https://jsonplaceholder.typicode.com/posts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(quote)
+            });
+        } catch (error) {
+            console.error("Error posting quote to server:", error);
         }
     }
 
@@ -90,9 +88,11 @@ document.addEventListener("DOMContentLoaded", () => {
             alertText.style.color = "red";
             alertText.style.display = "block";
         } else {
-            quotes.push({ text: newQuoteText, category: newQuoteCategory });
+            const newQuote = { text: newQuoteText, category: newQuoteCategory };
+            quotes.push(newQuote);
             saveQuotes();
             populateCategories();
+            postQuoteToServer(newQuote);
             document.getElementById("newQuoteText").value = "";
             document.getElementById("newQuoteCategory").value = "";
             alertText.textContent = "Quote and Category successfully added";
