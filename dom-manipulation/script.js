@@ -27,12 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const filteredQuotes = selectedCategory === "all" ? quotes : quotes.filter(q => q.category === selectedCategory);
         
         if (filteredQuotes.length === 0) {
-            quoteDisplay.innerHTML = "No quotes available for this category. Please add one!";
+            quoteDisplay.textContent = "No quotes available for this category. Please add one!";
             return;
         }
         let randomX = Math.floor(Math.random() * filteredQuotes.length);
         let randomQuote = filteredQuotes[randomX];
-        quoteDisplay.innerHTML = `<p><strong>${randomQuote.category}:</strong> "${randomQuote.text}"</p>`;
+        quoteDisplay.textContent = `${randomQuote.category}: "${randomQuote.text}"`;
     }
 
     categoryFilter.addEventListener("change", showFilteredQuotes);
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!alertText) return;
 
         if (newQuoteText === "" || newQuoteCategory === "") {
-            alertText.innerText = "Please enter a quote and a category";
+            alertText.textContent = "Please enter a quote and a category";
             alertText.style.color = "red";
             alertText.style.display = "block";
         } else {
@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
             populateCategories();
             document.getElementById("newQuoteText").value = "";
             document.getElementById("newQuoteCategory").value = "";
-            alertText.innerText = "Quote and Category successfully added";
+            alertText.textContent = "Quote and Category successfully added";
             alertText.style.color = "green";
             alertText.style.display = "block";
         }
