@@ -37,9 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <input id="newQuoteText" type="text" placeholder="Enter a new quote" />
       <input id="newQuoteCategory" type="text" placeholder="Enter quote category" /> <br>
       <button type="button" id="addQuoteBtn">Add Quote</button>
-      <p id="alertMessage" style="display: none;"></p> <br>
-      <button type="button" id="exportQuotes">Export JSON</button>
-      <input type="file" id="importFile" accept=".json" />
+      <p id="alertMessage" style="display: none;"></p> 
   `;
   document.body.appendChild(createAddQuoteForm);
 
